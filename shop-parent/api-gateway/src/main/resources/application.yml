@@ -1,0 +1,37 @@
+server:
+  port: 9000
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    sentinel:
+      transport:
+        port: 9999
+        dashboard: localhost:8080
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+    gateway:
+      discovery:
+        locator:
+          enabled: true # 让gateway可以发现nacos中的微服务
+      routes:
+        - id: product_route
+          uri: lb://product-service
+          predicates:
+            - Path=/product-serv/**
+          filters:
+            - StripPrefix=2,name
+        - id: order_route
+          uri: lb://order-service
+          predicates:
+            - Path=/order-serv/**
+          filters:
+            - StripPrefix=1
+        - id: order_route
+          uri: lb://order-service
+          predicates:
+              - Path=/order-serv/**
+          filters:
+              - StripPrefix=1
+              - Time=true
